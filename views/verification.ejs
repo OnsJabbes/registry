@@ -1,0 +1,92 @@
+<div class="row mt-5">
+  <div class="col-md-6 m-auto">
+    <div class="card card-body">
+      <h1 class="text-center mb-3"><i class="fas fa-user-plus"></i> Register</h1>
+      <% if(typeof errors != 'undefined') { %>
+        <% errors.forEach(function(error) { %>
+          <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <%= error.msg %>              
+            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+
+            </button>
+          </div>
+             
+         <% }); %>
+      <% } %>
+
+      <% if (success_msg != '') { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= success_msg %>              
+          <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+
+          </button>
+        </div>
+
+      <% } %>
+
+      <% if (error != '') { %>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <%= error %>              
+          <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+
+          </button>
+        </div>
+
+      <% } %>
+      
+      <form method="POST">
+        <div class="form-group">
+          <label for="code">Activation code </label>
+          <input type="text"
+                  id="code"
+                  name="code" 
+                  class="form-control"
+                  placeholder="enter a 4 digit number " 
+                  maxlength="4"  id="pin" pattern="\d{4}" 
+                  value="<%= typeof code != 'undefined' ? code: '' %>"
+                  required/>
+        </div>
+
+
+       
+       
+         
+        <a href="/users/login">
+        <button type="button"  class="continuer  btn btn-primary btn-block" >
+          continuer
+        </button>
+      </a>
+      </form>
+      
+    </div>
+  </div>
+  <script>
+    const btn = document.querySelector(".continuer");
+    const input = document.querySelector("#code");
+
+    btn.addEventListener("click" , async ()=>{
+      const code = input.value;
+      const email = localStorage.getItem("email");
+
+      const response = await fetch("http://localhost:5000/users/verification" , {
+        method:"POST",
+        headers:{
+          "content-type":"application/json"
+        },
+        body: JSON.stringify({
+          code,
+          email
+        })
+      });
+      const data = await response.json();
+
+      console.log(data);
+    })
+
+
+  </script>
+</div>
+
