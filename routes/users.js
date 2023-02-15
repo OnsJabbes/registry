@@ -49,6 +49,10 @@ router.post('/register', (req, res) => {
 		errors.push({ msg: 'Passwords do not match' });
 	}
 
+	//if (password.length < 6) {
+	//	errors.push({ msg: 'Passwords must be at least 6 characters' });
+	//}
+
 	if (errors.length > 0) {
 		res.render('register', {
 			errors,
@@ -78,7 +82,7 @@ router.post('/register', (req, res) => {
 					password,
 					activationCode,
 					isActive: false,
-					expiresAt: Date.now() + 600000000, //1 minute 
+					expiresAt: Date.now() + 60000, //1 minute 
 
 				})
 
@@ -104,7 +108,7 @@ router.post('/register', (req, res) => {
             <h2>welcome ${name} ! </h2>
             <p>enter code <b> ${activationCode} </b> in the app to verify your email adress and complete verification </p>
             <p> this code <b> expires in 1 minute  </b> . <p>
-            <a href="http://localhost:5000//users/verification">click here to insert your code</a>
+            <a href="http://localhost:8000//users/verification">click here to insert your code</a>
             </div>`,
 								}
 
@@ -133,49 +137,46 @@ router.get('/verification', (req, res) => res.render('verification'));
 
 //verif 
 router.post('/verification', async (req, res) => {
-	try {
+ try {
 		const { email, code } = req.body;
+		let errors = [];
+      	console.log(email);
 
-		console.log(email);
 
-		if (!email || !code) {
-			throw Error("erreur");
-		} else {
-			const userverification = await User.find({
+		const userverification = await User.find({
 				email
 			});
+	if (userverification.length <= 0) {
+			 
+   
+		const { expiresAt } = userverification[0];
+		const { activationCode } = userverification[0];
 
-			console.log(userverification);
+	   console.log(activationCode);
+	   console.log(code); 
 
+		    if (expiresAt < Date.now()) {
+			User.deleteMany({ email });
+			errors.push({ msg:"expiered code retry registration"})	; 
+			res.render('verification', {errors }) ;  		
+			} else 
 
-			if (userverification.length <= 0) {
-				throw new Error("account doesn t exist or has been verified already . please sign up or login ");
-			} else {
-				const { expiresAt } = userverification[0];
-				const { activationCode } = userverification[0];
-
-				console.log(activationCode);
-				console.log(code);
-
-				if (expiresAt < Date.now()) {
-					User.deleteMany({ email });
-					throw new Error("Code has expired . please request again .");
-				} else {
-
-					if (!activationCode == code) {
-						throw new Error("invalid code passed . check your email ");
-					} else {
+		   if (!activationCode == code) {
+						
+					errors.push({msg:"invalid code passed . check your email"})	
+					res.render('verification', {errors }) ; } 
+	}else {
 						//success 
 						await User.updateOne({ email }, { isActive: true });
-						res.json({
-							status: "ACTIVE",
-							message: 'user is verified successfully',
-						});
-					}
-				}
-			}
-		}
+
+						res.redirect('/users/login');
+						return res.status(200).json({
+							msg:"valid verification now you can log in"
+						})	
+    }
+
 	} catch (error) {
+		//error code verif
 		res.json({
 			status: "FAILED",
 			message: 'erreur '

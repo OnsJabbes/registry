@@ -71,7 +71,7 @@
       const code = input.value;
       const email = localStorage.getItem("email");
 
-      const response = await fetch("http://localhost:5000/users/verification" , {
+      const response = await fetch("http://localhost:8000/users/verification" , {
         method:"POST",
         headers:{
           "content-type":"application/json"
