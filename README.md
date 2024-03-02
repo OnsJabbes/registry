@@ -28,7 +28,7 @@ Commit your changes: git commit -am 'Add some feature'.
 Push to the branch: git push origin feature/YourFeature.
 Submit a pull request.
 ##Support 📞
-If you have any questions or encounter issues, open an issue or contact us at support@example.com.
+If you have any questions or encounter issues, open an issue or contact us at onsjabes@gmail.com .
 
 ##License 📄
 This project is licensed under the MIT License. See the LICENSE file for details.
